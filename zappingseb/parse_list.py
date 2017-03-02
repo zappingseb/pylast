@@ -5,6 +5,7 @@ import os
 import time
 import re
 import pandas as pd
+import datetime
 
 def assertEqual(first, second, msg=None):
     """Fail if the two objects are unequal as determined by the '=='
@@ -73,13 +74,29 @@ def deparse_txt(filename="./test_list.txt", exceptions=None):
 if __name__ == "__main__":
     doc = get_secret_dict()
 
-    # network = pylast.LastFMNetwork(api_key=doc["api_key"],
-    #                                api_secret=doc["api_secret"],
-    #                                username=doc["username"],
-    #                                password_hash=doc["password_hash"])
-    #
+    network = pylast.LastFMNetwork(api_key=doc["api_key"],
+                                    api_secret=doc["api_secret"],
+                                    username=doc["username"],
+                                    password_hash=doc["password_hash"])
+
+    lastfm_user = network.get_user("bbcradio2")
+
+    start = datetime.datetime(2017, 2, 28, 19, 00)
+    end = datetime.datetime(2017, 2, 28, 20, 00)
+    print(end)
+    import calendar
+    utc_start = calendar.timegm(start.utctimetuple())
+    utc_end = calendar.timegm(end.utctimetuple())
+
+    # Act
+    tracks = lastfm_user.get_recent_tracks(time_from=utc_start,
+                                           time_to=utc_end,limit=1000)
+
     # timestamp = time.time()
-    # #network.scrobble("Fettes Brot","Jein",timestamp)
+    # ---> Scrobble the Episode
+    network.scrobble_many(tracks)
+
+
     #
     # lastfm_user = network.get_user(doc["username"])
     # last_scrobble = lastfm_user.get_recent_tracks(limit=2)[0]
@@ -88,4 +105,4 @@ if __name__ == "__main__":
     # print(assertEqual(str(last_scrobble.track.title), str("Jein")))
     # print(assertEqual(str(last_scrobble.timestamp), str(timestamp)))
 
-    print(deparse_txt())
+    # print(deparse_txt())f
